@@ -17,7 +17,9 @@ parameters     → IDENTIFIER ( "," IDENTIFIER )*
 
 printStmt      → "print" expression
 
-expression     → call
+expression     → assignment
+assignment     → IDENTIFIER "=" assignment
+                | call
 call           → primary ( "(" ")" )
 primary        → STRING
                | IDENTIFIER

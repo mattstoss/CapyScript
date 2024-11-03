@@ -4,7 +4,11 @@ import textwrap
 
 test_cases = [
     {
-        "input": "simple.capy",
+        "input": "assignment_simple.capy",
+        "expected_stdout": "second string\n",
+    },
+    {
+        "input": "function_complex.capy",
         "expected_stdout": textwrap.dedent(
             """\
             my global string
@@ -19,7 +23,6 @@ test_cases = [
             result from func4
             """
         ),
-        "expected_exception": None,
     },
 ]
 
@@ -30,7 +33,7 @@ def test_process_data(case, capsys):
         filepath = "src/lib/testdata/" + filepath_suffix
         runner.execute_file(filepath)
 
-    if case["expected_exception"]:
+    if case.get("expected_exception"):
         with pytest.raises(case["expected_exception"]["type"]) as excinfo:
             run_test(case["input"])
         assert str(excinfo.value) == case["expected_exception"]["message"]
@@ -38,5 +41,5 @@ def test_process_data(case, capsys):
         run_test(case["input"])
 
     captured = capsys.readouterr()
-    if case["expected_stdout"]:
+    if case.get("expected_stdout"):
         assert captured.out == case["expected_stdout"]

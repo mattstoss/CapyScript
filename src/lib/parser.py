@@ -83,6 +83,14 @@ class Parser:
         return self._expr()
 
     def _expr(self):
+        return self._assignment()
+
+    def _assignment(self):
+        if self._is_match(TokenKind.Equal, lookahead=1):
+            token = self._match(TokenKind.Identifier)
+            self._match(TokenKind.Equal)
+            expr = self._assignment()
+            return ast.Assignment(token.string, expr)
         return self._call()
 
     def _call(self):
@@ -112,10 +120,11 @@ class Parser:
         else:
             raise ValueError(f"parser: unexpected token: {current}")
 
-    def _is_match(self, token_kind):
-        if self._is_end():
-            return False
-        return self._current().kind == token_kind
+    def _is_match(self, token_kind, lookahead=0):
+        idx = self._idx + lookahead
+        if idx < len(self._tokens):
+            return self._tokens[idx].kind == token_kind
+        return False
 
     def _match(self, token_kind):
         current = self._require_current()

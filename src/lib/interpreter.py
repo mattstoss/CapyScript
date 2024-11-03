@@ -13,11 +13,14 @@ class Interpreter:
     def _execute_impl(self, node, env):
         if isinstance(node, ast.VarDecl):
             result = self._execute_impl(node.expr, env)
-            env.set(node.name, result)
+            env.declare(node.name, result)
         elif isinstance(node, ast.Identifier):
             return env.get(node.value)
         elif isinstance(node, ast.String):
             return node.value
+        elif isinstance(node, ast.Assignment):
+            value = self._execute_impl(node.expr, env)
+            return env.assign(node.name, value)
         elif isinstance(node, ast.Print):
             result = self._execute_impl(node.expr, env)
             print(result)
@@ -31,7 +34,7 @@ class Interpreter:
             return last_result
         elif isinstance(node, ast.FuncDecl):
             callable = runtime.Callable(node.name, node.body, node.params)
-            env.set(node.name, callable)
+            env.declare(node.name, callable)
         elif isinstance(node, ast.Call):
             callable = self._execute_impl(node.value, env)
             if not isinstance(callable, runtime.Callable):
@@ -43,7 +46,7 @@ class Interpreter:
             call_env = Environment(enclosing_env=env)
             for param, arg in zip(callable.params, node.args):
                 arg_value = self._execute_impl(arg.expr, env)
-                call_env.set(param.name, arg_value)
+                call_env.declare(param.name, arg_value)
             return self._execute_impl(callable.body, call_env)
         else:
             raise ValueError(f"interpreter: unexpected node [{type(node)}]")

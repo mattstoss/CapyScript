@@ -63,6 +63,12 @@ class Identifier(ExprNode):
 
 
 @dataclass
+class Assignment(ExprNode):
+    name: str
+    expr: ExprNode
+
+
+@dataclass
 class Call(ExprNode):
     value: ExprNode
     args: Iterable[Arg]
