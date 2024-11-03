@@ -1,0 +1,34 @@
+let global_var = "my global string"
+
+fn func1() {
+    print global_var
+    let a = "local var from func1"
+    print a
+}
+
+fn func2(b) {
+    print global_var
+    let a = "local var from func2"
+    print a
+    print b
+}
+
+fn func3(b, c) {
+    print global_var
+    let a = "local var from func3"
+    print a
+    print b
+    print c
+}
+
+fn func4() {
+    let a = "result from func4"
+    return a
+}
+
+func1()
+func2("first param from func2")
+func3("first param from func3", "second param from func3")
+
+let result = func4()
+print result

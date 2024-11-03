@@ -1,0 +1,23 @@
+program        → declaration* EOF
+
+declaration    → varDecl
+               | funcDecl
+               | statement
+
+varDecl        → "let" IDENTIFIER = expression
+funcDecl        → "fn" function
+
+statement      → printStmt
+               | returnStmt
+returnStmt     → "return" expression
+block          → "{" declaration* "}"
+
+function       → IDENTIFIER "(" parameters? ")" block
+parameters     → IDENTIFIER ( "," IDENTIFIER )*
+
+printStmt      → "print" expression
+
+expression     → call
+call           → primary ( "(" ")" )
+primary        → STRING
+               | IDENTIFIER
