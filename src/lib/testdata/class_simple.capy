@@ -1,0 +1,15 @@
+class Foo {
+    fn do_print(self) {
+        self.local_text = "instance variable"
+        print self.local_text
+    }
+
+    fn text(self) {
+        return self.local_text
+    }
+}
+
+let foo = Foo()
+foo.do_print()
+print "back in main"
+print foo.text()

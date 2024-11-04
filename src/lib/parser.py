@@ -21,30 +21,42 @@ class Parser:
             return self._var_decl()
         elif current.kind == TokenKind.Func:
             return self._func_decl()
+        elif current.kind == TokenKind.Class:
+            return self._class_decl()
         else:
             return self._stmt()
 
     def _var_decl(self):
         self._match(TokenKind.Let)
-        token = self._match(TokenKind.Identifier)
+        name = self._match(TokenKind.Identifier).string
         self._match(TokenKind.Equal)
         expr = self._expr()
-        return ast.VarDecl(token.string, expr)
+        return ast.VarDecl(name, expr)
 
     def _func_decl(self):
         self._match(TokenKind.Func)
-        token = self._match(TokenKind.Identifier)
+        name = self._match(TokenKind.Identifier).string
         self._match(TokenKind.OpenParen)
         params = self._params()
         self._match(TokenKind.CloseParen)
         block = self._block()
-        return ast.FuncDecl(token.string, params, block)
+        return ast.FuncDecl(name, params, block)
+
+    def _class_decl(self):
+        self._match(TokenKind.Class)
+        name = self._match(TokenKind.Identifier).string
+        self._match(TokenKind.OpenBracket)
+        body = []
+        while not self._is_match(TokenKind.CloseBracket):
+            body.append(self._func_decl())
+        self._match(TokenKind.CloseBracket)
+        return ast.ClassDecl(name, body)
 
     def _params(self):
         params = []
         while not self._is_match(TokenKind.CloseParen):
-            token = self._match(TokenKind.Identifier)
-            new_param = ast.Param(token.string)
+            name = self._match(TokenKind.Identifier).string
+            new_param = ast.Param(name)
             params.append(new_param)
             if not self._is_match(TokenKind.CloseParen):
                 self._match(TokenKind.Comma)
@@ -86,21 +98,35 @@ class Parser:
         return self._assignment()
 
     def _assignment(self):
-        if self._is_match(TokenKind.Equal, lookahead=1):
-            token = self._match(TokenKind.Identifier)
-            self._match(TokenKind.Equal)
-            expr = self._assignment()
-            return ast.Assignment(token.string, expr)
-        return self._call()
+        expr = self._call()
+
+        if self._is_match(TokenKind.Equal):
+            if isinstance(expr, ast.Identifier) or isinstance(expr, ast.GetProperty):
+                self._match(TokenKind.Equal)
+                value = self._assignment()
+                return ast.Assignment(expr, value)
+            else:
+                raise ValueError(f"parser: can't assignment to {type(expr)}")
+
+        return expr
 
     def _call(self):
-        primary = self._primary()
-        if not self._is_match(TokenKind.OpenParen):
-            return primary
-        self._match(TokenKind.OpenParen)
-        args = self._args()
-        self._match(TokenKind.CloseParen)
-        return ast.Call(primary, args)
+        expr = self._primary()
+
+        while True:
+            if self._is_match(TokenKind.OpenParen):
+                self._match(TokenKind.OpenParen)
+                args = self._args()
+                self._match(TokenKind.CloseParen)
+                expr = ast.Call(expr, args)
+            elif self._is_match(TokenKind.Dot):
+                self._match(TokenKind.Dot)
+                name = self._match(TokenKind.Identifier).string
+                expr = ast.GetProperty(expr, name)
+            else:
+                break
+
+        return expr
 
     def _block(self):
         self._match(TokenKind.OpenBracket)

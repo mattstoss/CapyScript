@@ -53,6 +53,12 @@ class FuncDecl(StmtNode):
 
 
 @dataclass
+class ClassDecl(StmtNode):
+    name: str
+    body: Iterable[FuncDecl]
+
+
+@dataclass
 class String(ExprNode):
     value: str
 
@@ -72,3 +78,9 @@ class Assignment(ExprNode):
 class Call(ExprNode):
     value: ExprNode
     args: Iterable[Arg]
+
+
+@dataclass
+class GetProperty(ExprNode):
+    instance: ExprNode
+    property: str

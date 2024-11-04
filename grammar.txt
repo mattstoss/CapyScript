@@ -2,24 +2,25 @@ program        → declaration* EOF
 
 declaration    → varDecl
                | funcDecl
+               | classDecl
                | statement
 
 varDecl        → "let" IDENTIFIER = expression
-funcDecl        → "fn" function
+funcDecl        → "fn" IDENTIFIER "(" parameters? ")" block
+classDecl      → "class" IDENTIFIER "{" function_decl* "}"
 
 statement      → printStmt
                | returnStmt
 returnStmt     → "return" expression
 block          → "{" declaration* "}"
 
-function       → IDENTIFIER "(" parameters? ")" block
 parameters     → IDENTIFIER ( "," IDENTIFIER )*
 
 printStmt      → "print" expression
 
 expression     → assignment
-assignment     → IDENTIFIER "=" assignment
-                | call
-call           → primary ( "(" ")" )
+assignment     → ( call "." )? IDENTIFIER "=" assignment
+               | call ;
+call           → primary ( "(" ")" | "." IDENTIFIER )*
 primary        → STRING
                | IDENTIFIER

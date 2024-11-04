@@ -8,6 +8,16 @@ test_cases = [
         "expected_stdout": "second string\n",
     },
     {
+        "input": "class_simple.capy",
+        "expected_stdout": textwrap.dedent(
+            """\
+            instance variable
+            back in main
+            instance variable
+            """
+        ),
+    },
+    {
         "input": "function_complex.capy",
         "expected_stdout": textwrap.dedent(
             """\

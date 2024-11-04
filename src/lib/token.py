@@ -15,6 +15,8 @@ class TokenKind(Enum):
     Let = auto()
     Comma = auto()
     Return = auto()
+    Dot = auto()
+    Class = auto()
 
 
 @dataclass

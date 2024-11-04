@@ -7,6 +7,7 @@ _keywords_dict = frozendict(
         "let": TokenKind.Let,
         "fn": TokenKind.Func,
         "return": TokenKind.Return,
+        "class": TokenKind.Class,
     }
 )
 
@@ -18,6 +19,7 @@ _symbols_dict = frozendict(
         "}": TokenKind.CloseBracket,
         ",": TokenKind.Comma,
         "=": TokenKind.Equal,
+        ".": TokenKind.Dot,
     },
 )
 
